@@ -20,6 +20,7 @@ const demandAppRoutes = require('./routes/demandApp');
 const districtRoutes = require('./routes/district');
 const hqRoutes = require('./routes/hq');
 const merchantRoutes = require('./routes/merchant');
+const productsRoutes = require('./routes/products');
 
 const app = express();
 
@@ -59,6 +60,8 @@ app.use('/api/demand-app', demandAppRoutes);
 app.use('/api/district', districtRoutes);
 app.use('/api/hq', hqRoutes);
 app.use('/api/merchant', merchantRoutes);
+app.use('/api/products', productsRoutes);
+app.use('/api/buy', productsRoutes); // Alias for products
 
 // Welcome route with API documentation
 app.get('/', (req, res) => {
@@ -83,7 +86,9 @@ app.get('/', (req, res) => {
         demandApp: '/api/demand-app',
         district: '/api/district',
         hq: '/api/hq',
-        merchant: '/api/merchant'
+        merchant: '/api/merchant',
+        products: '/api/products',
+        buy: '/api/buy'
       }
     }
   });
