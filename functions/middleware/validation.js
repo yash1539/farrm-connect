@@ -145,10 +145,94 @@ const validateVerifyOTP = (req, res, next) => {
   next();
 };
 
+// Validation for sell product
+const validateSellProduct = (req, res, next) => {
+  const errors = {};
+  const {
+    name,
+    description,
+    category,
+    price,
+    unit,
+    quantity,
+    stock,
+    image
+  } = req.body;
+
+  // Name validation
+  if (!name || typeof name !== 'string') {
+    errors.name = 'Product name is required';
+  } else if (name.length > 200) {
+    errors.name = 'Product name must be less than 200 characters';
+  }
+
+  // Description validation
+  if (description && typeof description === 'string' && description.length > 1000) {
+    errors.description = 'Description must be less than 1000 characters';
+  }
+
+  // Category validation
+  const validCategories = ['grains', 'vegetables', 'fruits', 'pulses', 'spices', 'other'];
+  if (!category || typeof category !== 'string') {
+    errors.category = 'Category is required';
+  } else if (!validCategories.includes(category)) {
+    errors.category = `Category must be one of: ${validCategories.join(', ')}`;
+  }
+
+  // Price validation
+  if (price === undefined || price === null) {
+    errors.price = 'Price is required';
+  } else if (typeof price !== 'number' || price <= 0) {
+    errors.price = 'Price must be a number greater than 0';
+  }
+
+  // Unit validation
+  const validUnits = ['kg', 'quintal', 'ton', 'bag', 'piece'];
+  if (!unit || typeof unit !== 'string') {
+    errors.unit = 'Unit is required';
+  } else if (!validUnits.includes(unit)) {
+    errors.unit = `Unit must be one of: ${validUnits.join(', ')}`;
+  }
+
+  // Quantity validation
+  if (quantity === undefined || quantity === null) {
+    errors.quantity = 'Quantity is required';
+  } else if (typeof quantity !== 'number' || quantity <= 0) {
+    errors.quantity = 'Quantity must be a number greater than 0';
+  }
+
+  // Stock validation
+  if (stock === undefined || stock === null) {
+    errors.stock = 'Stock is required';
+  } else if (typeof stock !== 'number' || stock <= 0) {
+    errors.stock = 'Stock must be a number greater than 0';
+  }
+
+  // Image URL validation (if provided)
+  if (image && typeof image === 'string') {
+    try {
+      new URL(image);
+    } catch (e) {
+      errors.image = 'Image must be a valid URL';
+    }
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return res.status(400).json({
+      success: false,
+      error: 'Validation Error',
+      message: 'Invalid input data',
+      errors
+    });
+  }
+
+  next();
+};
+
 module.exports = {
   validateSignup,
   validateSignin,
   validateSendOTP,
-  validateVerifyOTP
+  validateVerifyOTP,
+  validateSellProduct
 };
-

@@ -21,6 +21,8 @@ const districtRoutes = require('./routes/district');
 const hqRoutes = require('./routes/hq');
 const merchantRoutes = require('./routes/merchant');
 const productsRoutes = require('./routes/products');
+const rentalRoutes = require('./routes/rental');
+const sellRoutes = require('./routes/sell');
 
 const app = express();
 
@@ -62,6 +64,8 @@ app.use('/api/hq', hqRoutes);
 app.use('/api/merchant', merchantRoutes);
 app.use('/api/products', productsRoutes);
 app.use('/api/buy', productsRoutes); // Alias for products
+app.use('/api/rental', rentalRoutes);
+app.use('/api/sell', sellRoutes);
 
 // Welcome route with API documentation
 app.get('/', (req, res) => {
@@ -88,7 +92,9 @@ app.get('/', (req, res) => {
         hq: '/api/hq',
         merchant: '/api/merchant',
         products: '/api/products',
-        buy: '/api/buy'
+        buy: '/api/buy',
+        rental: '/api/rental',
+        sell: '/api/sell'
       }
     }
   });
