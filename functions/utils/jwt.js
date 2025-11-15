@@ -45,7 +45,17 @@ const verifyToken = (token, isRefresh = false) => {
     const secret = isRefresh ? JWT_REFRESH_SECRET : JWT_SECRET;
     return jwt.verify(token, secret);
   } catch (error) {
-    throw new Error('Invalid or expired token');
+    // Provide more specific error messages
+    if (error.name === 'TokenExpiredError') {
+      const expiredAt = new Date(error.expiredAt);
+      throw new Error(`Token expired at ${expiredAt.toISOString()}. Please sign in again.`);
+    } else if (error.name === 'JsonWebTokenError') {
+      throw new Error('Invalid token. Please sign in again.');
+    } else if (error.name === 'NotBeforeError') {
+      throw new Error('Token not active yet.');
+    } else {
+      throw new Error(`Token verification failed: ${error.message}`);
+    }
   }
 };
 

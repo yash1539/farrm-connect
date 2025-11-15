@@ -24,10 +24,16 @@ const authenticate = async (req, res, next) => {
     try {
       decoded = verifyToken(token);
     } catch (error) {
+      console.error('Token verification error:', error.message);
       return res.status(401).json({
         success: false,
         error: 'Unauthorized',
-        message: 'Invalid or expired token'
+        message: error.message || 'Invalid or expired token',
+        details: process.env.NODE_ENV === 'development' ? {
+          errorName: error.name,
+          tokenLength: token.length,
+          tokenPrefix: token.substring(0, 20) + '...'
+        } : undefined
       });
     }
 

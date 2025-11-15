@@ -23,6 +23,9 @@ const merchantRoutes = require('./routes/merchant');
 const productsRoutes = require('./routes/products');
 const rentalRoutes = require('./routes/rental');
 const sellRoutes = require('./routes/sell');
+const ordersRoutes = require('./routes/orders');
+const paymentRoutes = require('./routes/payment');
+const loanRequestRoutes = require('./routes/loanRequest');
 
 const app = express();
 
@@ -66,6 +69,9 @@ app.use('/api/products', productsRoutes);
 app.use('/api/buy', productsRoutes); // Alias for products
 app.use('/api/rental', rentalRoutes);
 app.use('/api/sell', sellRoutes);
+app.use('/api/orders', ordersRoutes);
+app.use('/api/payment', paymentRoutes);
+app.use('/api/loan-request', loanRequestRoutes);
 
 // Welcome route with API documentation
 app.get('/', (req, res) => {
@@ -94,7 +100,10 @@ app.get('/', (req, res) => {
         products: '/api/products',
         buy: '/api/buy',
         rental: '/api/rental',
-        sell: '/api/sell'
+        sell: '/api/sell',
+        orders: '/api/orders',
+        payment: '/api/payment',
+        loanRequest: '/api/loan-request'
       }
     }
   });

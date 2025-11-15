@@ -229,10 +229,86 @@ const validateSellProduct = (req, res, next) => {
   next();
 };
 
+// Validation for profile update
+const validateProfileUpdate = (req, res, next) => {
+  const errors = {};
+  const {
+    fullName,
+    phoneNumber,
+    email,
+    pinCode,
+    village,
+    city,
+    state,
+    bankAccountNumber,
+    bankAddress,
+    ifscCode,
+    kisanCardNumber
+  } = req.body;
+
+  // Full Name validation (required)
+  if (fullName !== undefined) {
+    if (!fullName || typeof fullName !== 'string' || fullName.trim().length === 0) {
+      errors.fullName = 'Full name is required and cannot be empty';
+    } else if (fullName.length < 2 || fullName.length > 100) {
+      errors.fullName = 'Full name must be between 2 and 100 characters';
+    }
+  }
+
+  // Phone Number validation
+  if (phoneNumber !== undefined) {
+    const phoneRegex = /^[6-9][0-9]{9}$/;
+    if (!phoneNumber || typeof phoneNumber !== 'string') {
+      errors.phoneNumber = 'Phone number is required';
+    } else if (!phoneRegex.test(phoneNumber)) {
+      errors.phoneNumber = 'Phone number must be 10 digits starting with 6-9';
+    }
+  }
+
+  // Email validation
+  if (email !== undefined) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (email && typeof email === 'string' && !emailRegex.test(email)) {
+      errors.email = 'Invalid email format';
+    }
+  }
+
+  // PIN Code validation
+  if (pinCode !== undefined) {
+    const pinRegex = /^\d{6}$/;
+    if (pinCode && typeof pinCode === 'string' && !pinRegex.test(pinCode)) {
+      errors.pinCode = 'PIN code must be exactly 6 digits';
+    }
+  }
+
+  // IFSC Code validation
+  if (ifscCode !== undefined) {
+    const ifscRegex = /^[A-Z]{4}0[A-Z0-9]{6}$/;
+    if (ifscCode && typeof ifscCode === 'string') {
+      const upperIfsc = ifscCode.toUpperCase();
+      if (!ifscRegex.test(upperIfsc)) {
+        errors.ifscCode = 'IFSC code must be 11 characters in format: AAAA0XXXXXX';
+      }
+    }
+  }
+
+  if (Object.keys(errors).length > 0) {
+    return res.status(400).json({
+      success: false,
+      message: 'Validation failed',
+      error: 'VALIDATION_ERROR',
+      errors
+    });
+  }
+
+  next();
+};
+
 module.exports = {
   validateSignup,
   validateSignin,
   validateSendOTP,
   validateVerifyOTP,
-  validateSellProduct
+  validateSellProduct,
+  validateProfileUpdate
 };
