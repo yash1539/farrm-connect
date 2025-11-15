@@ -2,7 +2,7 @@
 
 const validateSignup = (req, res, next) => {
   const errors = [];
-  const { fullName, phoneNumber, email, password, confirmPassword, userType } = req.body;
+  const { fullName, phoneNumber, email, password, confirmPassword, userType, merchantType } = req.body;
 
   // Full Name validation
   if (!fullName || typeof fullName !== 'string') {
@@ -39,6 +39,22 @@ const validateSignup = (req, res, next) => {
     errors.push({ field: 'confirmPassword', message: 'Confirm password is required' });
   } else if (password !== confirmPassword) {
     errors.push({ field: 'confirmPassword', message: 'Passwords do not match' });
+  }
+
+  // User Type validation
+  const validUserTypes = ['farmer', 'merchant', 'admin'];
+  if (userType && !validUserTypes.includes(userType)) {
+    errors.push({ field: 'userType', message: `User type must be one of: ${validUserTypes.join(', ')}` });
+  }
+
+  // Merchant Type validation (required if userType is merchant)
+  if (userType === 'merchant') {
+    const validMerchantTypes = ['M1', 'M2', 'M3'];
+    if (!merchantType || typeof merchantType !== 'string') {
+      errors.push({ field: 'merchantType', message: 'Merchant type is required when userType is merchant' });
+    } else if (!validMerchantTypes.includes(merchantType.toUpperCase())) {
+      errors.push({ field: 'merchantType', message: `Merchant type must be one of: ${validMerchantTypes.join(', ')}` });
+    }
   }
 
   if (errors.length > 0) {

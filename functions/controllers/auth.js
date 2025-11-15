@@ -6,7 +6,7 @@ const { generateOTP, storeOTP, getAndVerifyOTP, checkOTPExists } = require('../u
 // Sign Up endpoint
 exports.signup = async (req, res) => {
   try {
-    const { fullName, phoneNumber, email, password, confirmPassword, userType } = req.body;
+    const { fullName, phoneNumber, email, password, confirmPassword, userType, merchantType } = req.body;
 
     // Check if user already exists by email
     const emailQuery = await db.collection('users')
@@ -39,17 +39,25 @@ exports.signup = async (req, res) => {
     // Hash password
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // Determine final user type
+    const finalUserType = userType || 'farmer';
+
     // Create user document
     const userData = {
       fullName,
       phoneNumber,
       email: email.toLowerCase(),
       password: hashedPassword,
-      userType: userType || 'farmer',
+      userType: finalUserType,
       createdAt: admin.firestore.FieldValue.serverTimestamp(),
       updatedAt: admin.firestore.FieldValue.serverTimestamp(),
       isVerified: false
     };
+
+    // Add merchant type if user is merchant
+    if (finalUserType === 'merchant' && merchantType) {
+      userData.merchantType = merchantType.toUpperCase(); // M1, M2, or M3
+    }
 
     const userRef = await db.collection('users').add(userData);
     const userId = userRef.id;
@@ -58,7 +66,7 @@ exports.signup = async (req, res) => {
     const tokens = generateTokens({
       userId,
       email: email.toLowerCase(),
-      userType: userType || 'farmer'
+      userType: finalUserType
     });
 
     // Return user data (without password)
@@ -67,9 +75,14 @@ exports.signup = async (req, res) => {
       fullName,
       phoneNumber,
       email: email.toLowerCase(),
-      userType: userType || 'farmer',
+      userType: finalUserType,
       isVerified: false
     };
+
+    // Add merchantType to response if merchant
+    if (finalUserType === 'merchant' && merchantType) {
+      userResponse.merchantType = merchantType.toUpperCase();
+    }
 
     return res.status(201).json({
       success: true,
